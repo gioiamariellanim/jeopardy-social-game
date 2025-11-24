@@ -1,10 +1,11 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeopardy! Fall Social Edition</title>
     <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Tone.js for background music synthesis --><script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <!-- Configure Tailwind to use Inter font and custom colors --><script>
         tailwind.config = {
             theme: {
@@ -91,7 +92,7 @@
 </head>
 <body class="jeopardy-background min-h-screen p-4 sm:p-8 font-sans">
     <div class="stars"></div>
-<!-- test commit -->
+
     <!-- === 1. Scoreboard (Always visible on Board View) === --><div id="scoreboard" class="max-w-7xl mx-auto mb-6 bg-gray-800/80 p-4 rounded-xl shadow-2xl border-2 border-gray-700 hidden">
         <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 text-center">
             
@@ -103,9 +104,14 @@
                 </div>
             </div>
 
-            <!-- New Game/Reset Button --><button onclick="resetGameConfirmation()" class="px-6 py-3 bg-jeopardy-yellow text-jeopardy-blue font-bold rounded-lg text-base sm:text-lg hover:bg-yellow-300 transition duration-150 shadow-md">
-                Reset Game
-            </button>
+            <!-- New Game/Reset/Mute Controls --><div class="flex flex-col items-center space-y-2">
+                <button onclick="resetGameConfirmation()" class="px-6 py-3 bg-jeopardy-yellow text-jeopardy-blue font-bold rounded-lg text-base sm:text-lg hover:bg-yellow-300 transition duration-150 shadow-md">
+                    Reset Game
+                </button>
+                <button id="mute-button" onclick="toggleMute()" class="px-4 py-1 bg-gray-500 text-white text-xs rounded-full hover:bg-gray-600 transition duration-150">
+                    Music: ON
+                </button>
+            </div>
             
             <!-- Team 2 --><div class="flex-1 w-full sm:w-auto p-2 bg-gray-900/50 rounded-lg">
                 <h3 class="text-xl font-bold text-white mb-2">Team 2 Score: $<span id="score-2">0</span></h3>
@@ -173,7 +179,80 @@
     </div>
 
     <script>
-        // Data Structure for the Jeopardy game (Loaded from previous step's updates)
+        // --- TONE.JS MUSIC SETUP ---
+        let clueMusicLoop = null;
+        let isMuted = false;
+        const synth = new Tone.Synth({
+            oscillator: { type: "sine" },
+            envelope: {
+                attack: 0.005,
+                decay: 0.1,
+                sustain: 0.3,
+                release: 1
+            }
+        }).toDestination();
+
+        // The classic Jeopardy clue theme melody (simplified)
+        const melody = [
+            { note: "G3", duration: "4n" },
+            { note: "C4", duration: "4n" },
+            { note: "G3", duration: "4n" },
+            { note: "C4", duration: "4n" },
+            { note: "F3", duration: "4n" },
+            { note: "Bb3", duration: "4n" },
+            { note: "F3", duration: "4n" },
+            { note: "Bb3", duration: "4n" }
+        ];
+
+        function startMusic() {
+            // Stop any existing music first
+            stopMusic();
+
+            if (isMuted) return;
+            
+            // Start the Tone.js audio context if it's suspended (required by browsers)
+            if (Tone.context.state !== 'running') {
+                Tone.start();
+            }
+
+            // Create a loop
+            clueMusicLoop = new Tone.Sequence((time, noteInfo) => {
+                synth.triggerAttackRelease(noteInfo.note, noteInfo.duration, time);
+            }, melody, "1n"); // Repeats every 1 whole note
+
+            clueMusicLoop.loop = true;
+            clueMusicLoop.start(0);
+            Tone.Transport.bpm.value = 80;
+            Tone.Transport.start();
+        }
+
+        function stopMusic() {
+            if (clueMusicLoop) {
+                clueMusicLoop.stop(0);
+                clueMusicLoop.dispose();
+                clueMusicLoop = null;
+            }
+            // Tone.Transport.stop(); // Keep transport running for faster restarts
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const button = document.getElementById('mute-button');
+            if (isMuted) {
+                button.textContent = "Music: OFF";
+                button.classList.replace('bg-gray-500', 'bg-red-500');
+                stopMusic();
+            } else {
+                button.textContent = "Music: ON";
+                button.classList.replace('bg-red-500', 'bg-gray-500');
+                // If a clue is currently open, restart music
+                if (currentView === 'clue_modal') {
+                    startMusic();
+                }
+            }
+        }
+
+        // --- GAME DATA AND STATE ---
         const gameData = [
             {
                 category: "Vibe Check: Meme History",
@@ -262,19 +341,24 @@
 
             if (view === 'title') {
                 document.getElementById('title-view').classList.remove('hidden');
+                stopMusic(); // Stop music on title screen
             } else if (view === 'board') {
                 document.getElementById('board-view').classList.remove('hidden');
                 document.getElementById('scoreboard').classList.remove('hidden');
+                stopMusic(); // Stop music on board view
                 renderBoard(); // Re-render to reflect disabled clues
             } else if (view === 'clue_modal') { // Renamed from 'modal' to be more specific
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('clue-view').classList.remove('hidden'); // Ensure clue view is shown
+                startMusic(); // START music when clue is displayed
             } else if (view === 'answer_modal') {
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('answer-view').classList.remove('hidden'); // Ensure answer view is shown
+                stopMusic(); // STOP music when answer is revealed
             } else if (view === 'reset_confirm') {
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('reset-confirmation-view').classList.remove('hidden');
+                stopMusic(); // Stop music during confirmation
             }
         }
 
@@ -359,7 +443,7 @@
             document.getElementById('modal-clue').innerHTML = clue.clue;
             document.getElementById('modal-answer').textContent = clue.answer;
 
-            setView('clue_modal'); // Show the clue first
+            setView('clue_modal'); // Show the clue first and start music
         }
 
         // Function to reveal the answer in the modal
@@ -368,13 +452,13 @@
             if (currentClue) {
                 localStorage.setItem(currentClue.id, 'disabled');
             }
-            setView('answer_modal'); // Show the answer view
+            setView('answer_modal'); // Show the answer view and stop music
         }
 
         // Function to close the modal and update the board
         function closeModal() {
             currentClue = null;
-            setView('board'); // Return to the board view
+            setView('board'); // Return to the board view and stop music
         }
 
         // Initialize the app
