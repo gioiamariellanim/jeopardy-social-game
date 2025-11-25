@@ -34,12 +34,17 @@
         .jeopardy-background {
             background: linear-gradient(180deg, #1c004b 0%, #3e017a 30%, #ff0066 70%, #ff6600 100%);
             position: relative;
-            overflow: hidden;
+            overflow-y: auto; /* Allow vertical scrolling on the background */
         }
 
-        /* Starry effect for the background */
+        /* Set HTML and Body height to ensure they cover the full viewport */
+        html, body {
+            height: 100%;
+        }
+        /* Remove min-h-screen from body and apply full height to allow container scrolling */
+        
         .stars {
-            position: absolute;
+            position: fixed; /* Changed to fixed so stars stay put while content scrolls */
             top: 0;
             left: 0;
             width: 100%;
@@ -49,6 +54,7 @@
             background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
             background-size: 50px 50px;
             opacity: 0.3;
+            z-index: -1; /* Ensure stars are behind everything */
         }
 
         .clue-cell {
@@ -90,7 +96,7 @@
         }
     </style>
 </head>
-<body class="jeopardy-background min-h-screen p-4 sm:p-8 font-sans">
+<body class="jeopardy-background p-4 sm:p-8 font-sans">
     <div class="stars"></div>
 
     <!-- === 1. Scoreboard (Always visible on Board View) === --><div id="scoreboard" class="max-w-7xl mx-auto mb-6 bg-gray-800/80 p-4 rounded-xl shadow-2xl border-2 border-gray-700 hidden">
@@ -124,7 +130,7 @@
         <p id="score-info" class="text-xs text-gray-400 mt-2 text-center">Score buttons use the value of the currently open clue.</p>
     </div>
 
-    <!-- === 2. Title View (Landing Page) === --><div id="title-view" class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+    <!-- === 2. Title View (Landing Page) === --><div id="title-view" class="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center">
         <h1 class="text-6xl sm:text-9xl font-bold text-white jeopardy-title-font tracking-widest leading-none" style="text-shadow: 0 0 10px rgba(255, 204, 0, 0.8), 0 0 20px rgba(255, 0, 102, 0.6);">
             JEOPARDY!
         </h1>
@@ -404,7 +410,8 @@
             // 1. Render Category Headers (first row)
             gameData.forEach(category => {
                 const header = document.createElement('div');
-                header.className = 'flex items-center justify-center p-2 sm:p-3 text-center text-white bg-jeopardy-blue font-bold text-base sm:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider h-24 sm:h-32 shadow-xl border-4 border-jeopardy-yellow leading-tight';
+                // Removed h-32/h-24 height limits to allow text to wrap on smaller screens without being cut off
+                header.className = 'flex items-center justify-center p-2 sm:p-3 text-center text-white bg-jeopardy-blue font-bold text-base sm:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider shadow-xl border-4 border-jeopardy-yellow leading-tight';
                 header.textContent = category.category;
                 board.appendChild(header);
             });
@@ -418,7 +425,8 @@
                     
                     const isDisabled = localStorage.getItem(clue.id) === 'disabled';
 
-                    let classList = 'clue-cell flex items-center justify-center h-20 sm:h-28 text-white font-extrabold text-3xl sm:text-5xl rounded-lg bg-jeopardy-blue transition duration-300';
+                    // Reduced vertical padding and used relative height (h-20/h-24) to keep cells tighter
+                    let classList = 'clue-cell flex items-center justify-center h-20 sm:h-24 text-white font-extrabold text-3xl sm:text-5xl rounded-lg bg-jeopardy-blue transition duration-300';
 
                     if (isDisabled) {
                         classList += ' disabled';
