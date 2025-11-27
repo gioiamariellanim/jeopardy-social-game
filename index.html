@@ -41,7 +41,6 @@
         html, body {
             height: 100%;
         }
-        /* Remove min-h-screen from body and apply full height to allow container scrolling */
         
         .stars {
             position: fixed; /* Changed to fixed so stars stay put while content scrolls */
@@ -258,66 +257,66 @@
             }
         }
 
-        // --- GAME DATA AND STATE ---
+        // --- GAME DATA AND STATE (ALL POP CULTURE / MEME VERSION) ---
         const gameData = [
             {
-                category: "Vibe Check: Meme History",
+                category: "Blink 182-000s",
                 clues: [
-                    { value: 200, clue: "The most famous version of this meme features a dog sitting calmly in a room engulfed in flames, saying 'This is fine.'", answer: "What is the 'This is Fine' Dog?", id: 'c1-200' },
-                    { value: 400, clue: "This short, looping video app, popular in the mid-2010s, gave us six-second legends like 'Look at all those chickens.'", answer: "What is Vine?", id: 'c1-400' },
-                    { value: 600, clue: "This meme, often used to express confusion or a deep philosophical inquiry, features a man blinking in disbelief.", answer: "What is the Disappointed/Blinking White Guy?", id: 'c1-600' },
-                    { value: 800, clue: "The song 'All Star' by Smash Mouth became an internet fixture largely due to its use in the opening credits of this 2001 animated movie.", answer: "What is *Shrek*?", id: 'c1-800' },
-                    { value: 1000, clue: "The 'distracted boyfriend' stock photo meme actually features a woman identified by this profession, typically shown holding a clipboard.", answer: "What is a photographer?", id: 'c1-1000' }
+                    { value: 200, clue: "This reality star's catchphrase, 'That's hot,' became the defining phrase of the mid-2000s.", answer: "Who is Paris Hilton?", id: 'c1-200' },
+                    { value: 400, clue: "The highly addictive flash game where you stack blocks to form horizontal lines.", answer: "What is Tetris?", id: 'c1-400' },
+                    { value: 600, clue: "The specific year that the first iPhone was released, changing Millennial cell phone use forever.", answer: "What is 2007?", id: 'c1-600' },
+                    { value: 800, clue: "The legendary, slightly glitchy video platform that allowed you to legally or illegally watch music videos in high school.", answer: "What is YouTube?", id: 'c1-800' },
+                    { value: 1000, clue: "The specific 2007 Britney Spears song whose video featured a legendary dance break in a circus tent.", answer: "What is 'Gimme More'?", id: 'c1-1000' }
                 ]
             },
             {
-                category: "Adulting is a Scam",
+                category: "The Canadian Content Law",
                 clues: [
-                    { value: 200, clue: "The phrase 'I need to talk to you about your ___' is often associated with the dreaded performance review at work.", answer: "What is your TPS report? (From *Office Space*)", id: 'c2-200' },
-                    { value: 400, clue: "This is the common, highly processed yellow fruit found on most grocery store shelves, which is notoriously hard to keep fresh.", answer: "What is a banana?", id: 'c2-400' },
-                    { value: 600, clue: "The concept of 'almond mom' refers to a parent who excessively worries about and restricts their child's consumption of this nutritional component.", answer: "What is food/calories/weight?", id: 'c2-600' },
-                    { value: 800, clue: "This widely mocked corporate jargon refers to a quick, casual conversation, usually over video conferencing.", answer: "What is a 'quick sync' or a 'touch base'?", id: 'c2-800' },
-                    { value: 1000, clue: "The tax forms most frequently used by individuals for basic income tax reporting are numbered 1040, W-2, and this form, used for interest and dividend income.", answer: "What is a 1099 form?", id: 'c2-1000' }
+                    { value: 200, clue: "The iconic Canadian singer known as 'The 6ix God.'", answer: "Who is Drake?", id: 'c2-200' },
+                    { value: 400, clue: "The hilarious phrase often used to describe Canadian politeness in a passive-aggressive way.", answer: "What is 'Sorry, eh?'", id: 'c2-400' },
+                    { value: 600, clue: "The two main ingredients in a classic Canadian 'Nanaimo Bar.'", answer: "What are chocolate and custard (or vanilla buttercream)?", id: 'c2-600' },
+                    { value: 800, clue: "The specific character from *Schitt's Creek* known for their unusual wardrobe and use of the phrase 'A little bit Alexis.'", answer: "Who is Alexis Rose?", id: 'c2-800' },
+                    { value: 1000, clue: "The Canadian-American star who launched the meme of putting a tiny picture of yourself in the corner of a video, often related to music reactions.", answer: "Who is Anthony Fantano (The Needle Drop)?", id: 'c2-1000' }
                 ]
             },
             {
-                category: "Streaming & Chill",
+                category: "Cringe Culture is Dead",
                 clues: [
-                    { value: 200, clue: "This Netflix coming-of-age comedy focuses on a group of high schoolers who start a sex therapy business.", answer: "What is *Sex Education*?", id: 'c3-200' },
-                    { value: 400, clue: "This HBO show about four friends in New York City became famous for its sharp dialogue and commentary on modern relationships and high society.", answer: "What is *Sex and the City*?", id: 'c3-400' },
-                    { value: 600, clue: "This South Korean survival drama became Netflix's most-watched series debut, with contestants playing deadly children's games.", answer: "What is *Squid Game*?", id: 'c3-600' },
-                    { value: 800, clue: "The final season of this Canadian sitcom featured a farewell tour of the Rose family's titular small town.", answer: "What is *Schitt's Creek*?", id: 'c3-800' },
-                    { value: 1000, clue: "This reality dating show, known for its iconic neon signs and 'recoupling' ceremonies, is set primarily in a villa on an island.", answer: "What is *Love Island*?", id: 'c3-1000' }
+                    { value: 200, clue: "The common internet activity that involves watching and rating strangers performing songs.", answer: "What is TikTok?", id: 'c3-200' },
+                    { value: 400, clue: "The highly relatable meme of a man looking back at another woman, while his girlfriend stares in disapproval.", answer: "What is the 'Distracted Boyfriend' meme?", id: 'c3-400' },
+                    { value: 600, clue: "The meme format that uses a series of photos of a character slowly realizing an unpleasant truth.", answer: "What is 'Expanding Brain' or 'Woke Bae'?", id: 'c3-600' },
+                    { value: 800, clue: "The early 2010s trend of planking in public places, causing confusion and minor injuries.", answer: "What is 'Planking'?", id: 'c3-800' },
+                    { value: 1000, clue: "The specific format of using a yellow, animated character to deliver shocking, often poorly written jokes in the early 2010s.", answer: "What are Minion memes?", id: 'c3-1000' }
                 ]
             },
             {
-                category: "The Algorithm Knows Me",
+                category: "It's the Nostalgia for Me",
                 clues: [
-                    { value: 200, clue: "This social media platform is primarily known for short-form video content and viral dance challenges.", answer: "What is TikTok?", id: 'c4-200' },
-                    { value: 400, clue: "This term describes content, usually on YouTube or Twitch, where a creator slowly opens and shows off items from a package or shopping spree.", answer: "What is an unboxing video?", id: 'c4-400' },
-                    { value: 600, clue: "Known by the username 'MrBeast,' this creator holds the title for the most subscribers on YouTube.", answer: "Who is Jimmy Donaldson?", id: 'c4-600' },
-                    { value: 800, clue: "This popular gaming communication platform is structured around 'servers' and 'channels.'", answer: "What is Discord?", id: 'c4-800' },
-                    { value: 1000, clue: "This controversial 2019 music festival, promoted by social media influencers, failed spectacularly on a remote Caribbean island.", answer: "What is Fyre Festival?", id: 'c4-1000' }
+                    { value: 200, clue: "The main handheld gaming device that popularized the use of interchangeable cartridges.", answer: "What is the Game Boy?", id: 'c4-200' },
+                    { value: 400, clue: "The sugary, brightly colored cereal that notoriously turned the milk blue.", answer: "What is Crunch Berries (Cap'n Crunch)?", id: 'c4-400' },
+                    { value: 600, clue: "The iconic 90s toy that changed colours depending on its temperature.", answer: "What is a mood ring?", id: 'c4-600' },
+                    { value: 800, clue: "The highly popular 90s cartoon about a group of talking animals solving mysteries in a van.", answer: "What is *Scooby-Doo*?", id: 'c4-800' },
+                    { value: 1000, clue: "The specific video game console that introduced the concept of analog sticks and rumble feedback.", answer: "What is the Nintendo 64 (N64)?", id: 'c4-1000' }
                 ]
             },
             {
-                category: "$90$s Kid Nostalgia",
+                category: "The Streaming Gods",
                 clues: [
-                    { value: 200, clue: "This gooey, green substance was Nickelodeon's signature trademark and often dumped on celebrities.", answer: "What is Gak (or Slime)?", id: 'c5-200' },
-                    { value: 400, clue: "This handheld virtual pet required feeding, cleaning, and attention, or it would 'die.'", answer: "What is a Tamagotchi?", id: 'c5-400' },
-                    { value: 600, clue: "This platform was the main way Millennials communicated online after school before Facebook or Instagram existed, often using custom layouts.", answer: "What is MySpace?", id: 'c5-600' },
-                    { value: 800, clue: "The popular 90s handheld console released by Nintendo could only display four shades of gray/green on its screen.", answer: "What is the Game Boy?", id: 'c5-800' },
-                    { value: 1000, clue: "This animated Disney movie features a princess who saves her country from the Huns by disguising herself as a male soldier named Ping.", answer: "What is *Mulan*?", id: 'c5-1000' }
+                    { value: 200, clue: "The Netflix show that revived the careers of Winona Ryder and brought back 80s nostalgia.", answer: "What is *Stranger Things*?", id: 'c5-200' },
+                    { value: 400, clue: "The HBO series that follows the dysfunctional, wealthy Roy family fighting for control of a media empire.", answer: "What is *Succession*?", id: 'c5-400' },
+                    { value: 600, clue: "The Disney+ show that introduced the world to the adorable, silent character Grogu (Baby Yoda).", answer: "What is *The Mandalorian*?", id: 'c5-600' },
+                    { value: 800, clue: "The genre of documentary popularized by Netflix that often involves true crimes, conspiracies, and wild twists.", answer: "What is True Crime?", id: 'c5-800' },
+                    { value: 1000, clue: "The South Korean series that broke Netflix records in 2021 by featuring contestants competing in deadly children's games.", answer: "What is *Squid Game*?", id: 'c5-1000' }
                 ]
             },
             {
-                category: "Too Online",
+                category: "TikTok Tactics",
                 clues: [
-                    { value: 200, clue: "This common abbreviation means 'in my humble opinion' or 'in my honest opinion.'", answer: "What is IMHO?", id: 'c6-200' },
-                    { value: 400, clue: "When someone is criticized online for a past action, they are often said to have been subjected to this type of 'culture.'", answer: "What is cancel culture?", id: 'c6-400' },
-                    { value: 600, clue: "This term, originating on Twitter, is used to describe a short, frantic burst of public obsession or discussion about a specific topic.", answer: "What is a discourse or a micro-discourse?", id: 'c6-600' },
-                    { value: 800, clue: "This term is used to describe a long, continuous series of posts, often explaining a complex topic or telling a detailed story.", answer: "What is a thread?", id: 'c6-800' },
-                    { value: 1000, clue: "The classic video game cheat code Up, Up, Down, Down, Left, Right, Left, Right, B, A, Start is known by this name.", answer: "What is the Konami Code?", id: 'c6-1000' }
+                    { value: 200, clue: "The abbreviation used to describe content that is entertaining and addictive, meaning 'for your page.'", answer: "What is FYP?", id: 'c6-200' },
+                    { value: 400, clue: "The specific type of short video involving synchronized movement to a popular song clip.", answer: "What is a dance trend or dance challenge?", id: 'c6-400' },
+                    { value: 600, clue: "The popular filter that gives you dramatically large, cartoonish eyes and mouth.", answer: "What is the 'Face Zoom' or 'Big Eyes' filter?", id: 'c6-600' },
+                    { value: 800, clue: "The method of communicating an intense, often unspoken, reaction using only facial expressions and lip syncing to audio.", answer: "What is a 'Vibe Check'?", id: 'c6-800' },
+                    { value: 1000, clue: "The internet slang term used to describe someone who is exceptionally skilled, flawless, or attractive, often related to celebrities.", answer: "What is 'Slay' or 'Iconic'?", id: 'c6-1000' }
                 ]
             }
         ];
