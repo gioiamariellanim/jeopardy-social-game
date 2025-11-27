@@ -35,6 +35,7 @@
             background: linear-gradient(180deg, #1c004b 0%, #3e017a 30%, #ff0066 70%, #ff6600 100%);
             position: relative;
             overflow-y: auto; /* Allow vertical scrolling on the background */
+            overflow-x: hidden; /* Prevent horizontal scrolling unless absolutely necessary */
         }
 
         /* Set HTML and Body height to ensure they cover the full viewport */
@@ -141,8 +142,8 @@
         </button>
     </div>
 
-    <!-- === 3. Board View (Main Game Grid) === --><div id="board-view" class="max-w-7xl mx-auto hidden">
-        <div id="jeopardy-board" class="grid grid-cols-6 gap-2 sm:gap-4">
+    <!-- === 3. Board View (Main Game Grid) === --><div id="board-view" class="max-w-7xl mx-auto max-w-full overflow-x-auto hidden">
+        <div id="jeopardy-board" class="grid grid-cols-6 gap-2 sm:gap-4 min-w-[700px]">
             <!-- The board will be populated by JavaScript --></div>
     </div>
 
@@ -409,8 +410,8 @@
             // 1. Render Category Headers (first row)
             gameData.forEach(category => {
                 const header = document.createElement('div');
-                // Removed h-32/h-24 height limits to allow text to wrap on smaller screens without being cut off
-                header.className = 'flex items-center justify-center p-2 sm:p-3 text-center text-white bg-jeopardy-blue font-bold text-base sm:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider shadow-xl border-4 border-jeopardy-yellow leading-tight';
+                // Decreasing text size on md: breakpoint to better fit the six columns horizontally
+                header.className = 'flex items-center justify-center p-1 sm:p-2 text-center text-white bg-jeopardy-blue font-bold text-sm md:text-base lg:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider shadow-xl border-4 border-jeopardy-yellow leading-tight';
                 header.textContent = category.category;
                 board.appendChild(header);
             });
@@ -424,7 +425,7 @@
                     
                     const isDisabled = localStorage.getItem(clue.id) === 'disabled';
 
-                    // Reduced vertical padding and used relative height (h-20/h-24) to keep cells tighter
+                    // Use relative heights
                     let classList = 'clue-cell flex items-center justify-center h-20 sm:h-24 text-white font-extrabold text-3xl sm:text-5xl rounded-lg bg-jeopardy-blue transition duration-300';
 
                     if (isDisabled) {
