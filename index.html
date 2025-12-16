@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeopardy! Fall Social Edition</title>
+    <title>Jeopardy! Christmas Social Edition</title>
     <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Tone.js for background music synthesis --><script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    
     <!-- Configure Tailwind to use Inter font and custom colors --><script>
         tailwind.config = {
             theme: {
@@ -14,10 +14,11 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        'jeopardy-blue': '#060087',
-                        'jeopardy-yellow': '#ffcc00',
-                        'jeopardy-red': '#cc0000',
-                        'jeopardy-light-blue': '#3333ff',
+                        'jeopardy-red': '#B30000', // Deep Christmas Red
+                        'jeopardy-green': '#006633', // Deep Christmas Green
+                        'jeopardy-gold': '#FFD700', // Festive Gold
+                        'jeopardy-white': '#FFFFFF',
+                        'jeopardy-dark': '#1a1a1a',
                     }
                 }
             }
@@ -30,12 +31,12 @@
             font-family: 'Roboto Slab', serif;
         }
 
-        /* Gradient background inspired by the provided screenshots (space/retro look) */
+        /* Festive Gradient background */
         .jeopardy-background {
-            background: linear-gradient(180deg, #1c004b 0%, #3e017a 30%, #ff0066 70%, #ff6600 100%);
+            background: linear-gradient(180deg, #b30000 0%, #006633 40%, #006633 60%, #b30000 100%);
             position: relative;
-            overflow-y: auto; /* Allow vertical scrolling on the background */
-            overflow-x: hidden; /* Prevent horizontal scrolling unless absolutely necessary */
+            overflow-y: auto; 
+            overflow-x: hidden; 
         }
 
         /* Set HTML and Body height to ensure they cover the full viewport */
@@ -44,17 +45,17 @@
         }
         
         .stars {
-            position: fixed; /* Changed to fixed so stars stay put while content scrolls */
+            position: fixed; 
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            /* Placeholder for a complex starfield effect */
-            background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
-            background-size: 50px 50px;
-            opacity: 0.3;
-            z-index: -1; /* Ensure stars are behind everything */
+            /* Simple sparkle pattern using gold/white */
+            background-image: radial-gradient(#FFD700 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
+            background-size: 80px 80px;
+            opacity: 0.4;
+            z-index: -1; 
         }
 
         .clue-cell {
@@ -62,15 +63,15 @@
             cursor: pointer;
             user-select: none;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            border: 4px solid #000; /* Darker border for contrast */
+            border: 4px solid #000;
         }
         .clue-cell:hover:not(.disabled) {
             transform: scale(1.03);
-            box-shadow: 0 8px 15px rgba(255, 204, 0, 0.6);
+            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.8); /* Gold hover effect */
         }
         .disabled {
-            background-color: #1a1a1a !important; /* Very dark grey when disabled */
-            color: #444444 !important; /* Muted text when disabled */
+            background-color: #333333 !important; 
+            color: #666666 !important; 
             cursor: default;
             pointer-events: none;
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
@@ -92,38 +93,52 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .modal-content {
-            animation: fadeIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bounce effect */
+            animation: fadeIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
         }
+
     </style>
 </head>
 <body class="jeopardy-background p-4 sm:p-8 font-sans">
     <div class="stars"></div>
 
-    <!-- === 1. Scoreboard (Always visible on Board View) === --><div id="scoreboard" class="max-w-7xl mx-auto mb-6 bg-gray-800/80 p-4 rounded-xl shadow-2xl border-2 border-gray-700 hidden">
+    <!-- AUDIO PLAYER: Updated with the provided hosted MP3 URL. -->
+    <audio id="background-music" loop preload="auto" style="display:none;">
+        <source src="https://res.cloudinary.com/eventmobi/video/upload/v1765918679/_Gee%20Assets/social%20fun/Christmas_Background_Music_For_Videos_Royalty_Free_Tis_the_Season.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- === 1. Scoreboard (Always visible on Board View) === --><div id="scoreboard" class="max-w-7xl mx-auto mb-6 bg-jeopardy-dark/80 p-4 rounded-xl shadow-2xl border-2 border-jeopardy-green hidden">
         <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 text-center">
             
-            <!-- Team 1 --><div class="flex-1 w-full sm:w-auto p-2 bg-gray-900/50 rounded-lg">
-                <h3 class="text-xl font-bold text-white mb-2">Team 1 Score: $<span id="score-1">0</span></h3>
+            <!-- Team 1 --><div class="flex-1 w-full sm:w-auto p-2 bg-jeopardy-red/50 rounded-lg">
+                <h3 class="text-xl font-bold text-jeopardy-white mb-2">Team 1 Score: $<span id="score-1">0</span></h3>
                 <div class="flex justify-center space-x-2">
-                    <button onclick="updateScore(1, currentClue ? currentClue.value : 200)" class="px-4 py-2 bg-green-500 rounded-lg text-white font-bold hover:bg-green-600 transition duration-150 text-sm sm:text-base">+ Correct</button>
-                    <button onclick="updateScore(1, -(currentClue ? currentClue.value : 200))" class="px-4 py-2 bg-jeopardy-red rounded-lg text-white font-bold hover:bg-red-700 transition duration-150 text-sm sm:text-base">- Incorrect</button>
+                    <button onclick="updateScore(1, currentClue ? currentClue.value : 200)" class="px-4 py-2 bg-jeopardy-green rounded-lg text-white font-bold hover:bg-green-700 transition duration-150 text-sm sm:text-base">+ Correct</button>
+                    <button onclick="updateScore(1, -(currentClue ? currentClue.value : 200))" class="px-4 py-2 bg-jeopardy-red text-white font-bold hover:bg-red-700 transition duration-150 text-sm sm:text-base">- Incorrect</button>
                 </div>
             </div>
 
-            <!-- New Game/Reset/Mute Controls --><div class="flex flex-col items-center space-y-2">
-                <button onclick="resetGameConfirmation()" class="px-6 py-3 bg-jeopardy-yellow text-jeopardy-blue font-bold rounded-lg text-base sm:text-lg hover:bg-yellow-300 transition duration-150 shadow-md">
+            <!-- New Game/Reset/Mute/Volume Controls -->
+            <div class="flex flex-col items-center space-y-2">
+                <button onclick="resetGameConfirmation()" class="px-6 py-3 bg-jeopardy-gold text-jeopardy-dark font-bold rounded-lg text-base sm:text-lg hover:bg-yellow-300 transition duration-150 shadow-md">
                     Reset Game
                 </button>
-                <button id="mute-button" onclick="toggleMute()" class="px-4 py-1 bg-gray-500 text-white text-xs rounded-full hover:bg-gray-600 transition duration-150">
-                    Music: ON
-                </button>
+                <div class="flex items-center space-x-3 bg-gray-900/50 p-2 rounded-lg">
+                    <button id="mute-button" onclick="toggleMute()" class="px-4 py-1 bg-gray-500 text-white text-xs rounded-full hover:bg-gray-600 transition duration-150">
+                        Music: OFF (Click to Start)
+                    </button>
+                    <div class="flex flex-col items-center">
+                         <label for="volume-slider" class="text-jeopardy-white text-xs font-semibold mb-1">Volume</label>
+                         <input type="range" id="volume-slider" min="0" max="100" value="20" oninput="setVolume(this.value)" class="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg">
+                    </div>
+                </div>
             </div>
             
-            <!-- Team 2 --><div class="flex-1 w-full sm:w-auto p-2 bg-gray-900/50 rounded-lg">
-                <h3 class="text-xl font-bold text-white mb-2">Team 2 Score: $<span id="score-2">0</span></h3>
+            <!-- Team 2 --><div class="flex-1 w-full sm:w-auto p-2 bg-jeopardy-red/50 rounded-lg">
+                <h3 class="text-xl font-bold text-jeopardy-white mb-2">Team 2 Score: $<span id="score-2">0</span></h3>
                 <div class="flex justify-center space-x-2">
-                    <button onclick="updateScore(2, currentClue ? currentClue.value : 200)" class="px-4 py-2 bg-green-500 rounded-lg text-white font-bold hover:bg-green-600 transition duration-150 text-sm sm:text-base">+ Correct</button>
-                    <button onclick="updateScore(2, -(currentClue ? currentClue.value : 200))" class="px-4 py-2 bg-jeopardy-red rounded-lg text-white font-bold hover:bg-red-700 transition duration-150 text-sm sm:text-base">- Incorrect</button>
+                    <button onclick="updateScore(2, currentClue ? currentClue.value : 200)" class="px-4 py-2 bg-jeopardy-green rounded-lg text-white font-bold hover:bg-green-700 transition duration-150 text-sm sm:text-base">+ Correct</button>
+                    <button onclick="updateScore(2, -(currentClue ? currentClue.value : 200))" class="px-4 py-2 bg-jeopardy-red text-white font-bold hover:bg-red-700 transition duration-150 text-sm sm:text-base">- Incorrect</button>
                 </div>
             </div>
         </div>
@@ -131,13 +146,13 @@
     </div>
 
     <!-- === 2. Title View (Landing Page) === --><div id="title-view" class="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] text-center">
-        <h1 class="text-6xl sm:text-9xl font-bold text-white jeopardy-title-font tracking-widest leading-none" style="text-shadow: 0 0 10px rgba(255, 204, 0, 0.8), 0 0 20px rgba(255, 0, 102, 0.6);">
+        <h1 class="text-6xl sm:text-9xl font-bold text-jeopardy-gold jeopardy-title-font tracking-widest leading-none" style="text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(179, 0, 0, 0.6);">
             JEOPARDY!
         </h1>
-        <h2 class="text-2xl sm:text-4xl font-extrabold text-jeopardy-yellow jeopardy-title-font mt-4 mb-12 uppercase tracking-wider" style="text-shadow: 0 0 5px #000;">
-            Fall Social Edition
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-jeopardy-white jeopardy-title-font mt-4 mb-12 uppercase tracking-wider" style="text-shadow: 0 0 5px #000;">
+            Christmas Social Edition
         </h2>
-        <button onclick="setView('board')" class="px-10 py-5 bg-jeopardy-yellow text-jeopardy-blue font-extrabold rounded-xl text-2xl sm:text-3xl hover:bg-yellow-300 transition duration-300 shadow-xl transform hover:scale-105">
+        <button onclick="setView('board')" class="px-10 py-5 bg-jeopardy-gold text-jeopardy-dark font-extrabold rounded-xl text-2xl sm:text-3xl hover:bg-yellow-300 transition duration-300 shadow-xl transform hover:scale-105">
             Start Game
         </button>
     </div>
@@ -149,33 +164,33 @@
 
 
     <!-- === 4. Modal for Clue and Answer Display === --><div id="clue-modal" class="modal-backdrop hidden">
-        <div class="modal-content bg-jeopardy-blue text-white rounded-xl p-8 max-w-3xl w-11/12 shadow-2xl border-4 border-jeopardy-yellow transform">
-            <h2 id="modal-category" class="text-center text-xl sm:text-3xl font-bold jeopardy-title-font mb-2 text-jeopardy-yellow uppercase"></h2>
-            <p id="modal-clue-value" class="text-center text-lg sm:text-xl font-bold mb-6 text-white"></p>
+        <div class="modal-content bg-jeopardy-red text-jeopardy-white rounded-xl p-8 max-w-3xl w-11/12 shadow-2xl border-4 border-jeopardy-gold transform">
+            <h2 id="modal-category" class="text-center text-xl sm:text-3xl font-bold jeopardy-title-font mb-2 text-jeopardy-gold uppercase"></h2>
+            <p id="modal-clue-value" class="text-center text-lg sm:text-xl font-bold mb-6 text-jeopardy-white"></p>
 
             <!-- Clue View --><div id="clue-view">
                 <p id="modal-clue" class="text-2xl sm:text-4xl text-center font-medium leading-snug mb-8" style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></p>
-                <button onclick="revealAnswer()" class="w-full py-4 bg-jeopardy-light-blue text-white font-bold rounded-lg text-xl sm:text-2xl hover:bg-blue-500 transition duration-150 shadow-lg border-2 border-white">
+                <button onclick="revealAnswer()" class="w-full py-4 bg-jeopardy-green text-jeopardy-white font-bold rounded-lg text-xl sm:text-2xl hover:bg-green-700 transition duration-150 shadow-lg border-2 border-jeopardy-white">
                     Reveal The Answer
                 </button>
             </div>
 
             <!-- Answer View --><div id="answer-view" class="hidden">
                 <p class="text-xl sm:text-2xl text-center mb-4 text-gray-300">The Answer is...</p>
-                <p id="modal-answer" class="text-3xl sm:text-5xl text-center font-extrabold text-jeopardy-yellow mb-8 jeopardy-title-font" style="text-shadow: 0 0 10px rgba(255, 204, 0, 0.8);"></p>
-                <button onclick="closeModal()" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg text-lg sm:text-xl hover:bg-green-700 transition duration-150 shadow-md">
+                <p id="modal-answer" class="text-3xl sm:text-5xl text-center font-extrabold text-jeopardy-gold mb-8 jeopardy-title-font" style="text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);"></p>
+                <button onclick="closeModal()" class="w-full py-3 bg-jeopardy-green text-jeopardy-white font-bold rounded-lg text-lg sm:text-xl hover:bg-green-700 transition duration-150 shadow-md">
                     Return to Board
                 </button>
             </div>
 
             <!-- Reset Confirmation View (New) --><div id="reset-confirmation-view" class="hidden text-center">
-                <h2 class="text-3xl font-bold jeopardy-title-font text-jeopardy-yellow mb-4">RESET GAME?</h2>
-                <p class="text-xl font-medium text-white mb-8">Are you sure you want to clear all scores and played clues?</p>
+                <h2 class="text-3xl font-bold jeopardy-title-font text-jeopardy-gold mb-4">RESET GAME?</h2>
+                <p class="text-xl font-medium text-jeopardy-white mb-8">Are you sure you want to clear all scores and played clues?</p>
                 <div class="flex justify-center space-x-4">
-                    <button onclick="performReset(true)" class="px-8 py-4 bg-red-600 text-white font-bold rounded-lg text-2xl hover:bg-red-700 transition duration-150 shadow-md">
+                    <button onclick="performReset(true)" class="px-8 py-4 bg-jeopardy-red text-jeopardy-white font-bold rounded-lg text-2xl hover:bg-red-700 transition duration-150 shadow-md">
                         Yes, Reset
                     </button>
-                    <button onclick="performReset(false)" class="px-8 py-4 bg-gray-500 text-white font-bold rounded-lg text-2xl hover:bg-gray-600 transition duration-150 shadow-md">
+                    <button onclick="performReset(false)" class="px-8 py-4 bg-gray-500 text-jeopardy-white font-bold rounded-lg text-2xl hover:bg-gray-600 transition duration-150 shadow-md">
                         No, Cancel
                     </button>
                 </div>
@@ -185,139 +200,116 @@
     </div>
 
     <script>
-        // --- TONE.JS MUSIC SETUP ---
-        let clueMusicLoop = null;
-        let isMuted = false;
-        const synth = new Tone.Synth({
-            oscillator: { type: "sine" },
-            envelope: {
-                attack: 0.005,
-                decay: 0.1,
-                sustain: 0.3,
-                release: 1
-            }
-        }).toDestination();
+        // --- MUSIC CONTROL (USING NATIVE AUDIO) ---
+        const backgroundMusic = document.getElementById('background-music');
+        const volumeSlider = document.getElementById('volume-slider');
+        let isMuted = true; // Start muted, waiting for user interaction
+        
+        // Initialize volume to the slider value (0-100) / 100
+        backgroundMusic.volume = volumeSlider.value / 100;
 
-        // The classic Jeopardy clue theme melody (simplified)
-        const melody = [
-            { note: "G3", duration: "4n" },
-            { note: "C4", duration: "4n" },
-            { note: "G3", duration: "4n" },
-            { note: "C4", duration: "4n" },
-            { note: "F3", duration: "4n" },
-            { note: "Bb3", duration: "4n" },
-            { note: "F3", duration: "4n" },
-            { note: "Bb3", duration: "4n" }
-        ];
-
-        function startMusic() {
-            // Stop any existing music first
-            stopMusic();
-
-            if (isMuted) return;
+        function setVolume(value) {
+            // value is a string from 0 to 100
+            const volume = parseFloat(value) / 100;
+            backgroundMusic.volume = volume;
             
-            // Start the Tone.js audio context if it's suspended (required by browsers)
-            if (Tone.context.state !== 'running') {
-                Tone.start();
+            // If the user moves the slider up and the volume is not 0, implicitly unmute
+            if (volume > 0 && isMuted) {
+                isMuted = false;
+                document.getElementById('mute-button').textContent = "Music: ON";
+                document.getElementById('mute-button').classList.replace('bg-red-500', 'bg-gray-500');
+            } else if (volume === 0 && !isMuted) {
+                // If the user slides to 0, implicitly mute
+                isMuted = true;
+                document.getElementById('mute-button').textContent = "Music: MUTE";
+                document.getElementById('mute-button').classList.replace('bg-gray-500', 'bg-red-500');
             }
-
-            // Create a loop
-            clueMusicLoop = new Tone.Sequence((time, noteInfo) => {
-                synth.triggerAttackRelease(noteInfo.note, noteInfo.duration, time);
-            }, melody, "1n"); // Repeats every 1 whole note
-
-            clueMusicLoop.loop = true;
-            clueMusicLoop.start(0);
-            Tone.Transport.bpm.value = 80;
-            Tone.Transport.start();
         }
-
-        function stopMusic() {
-            if (clueMusicLoop) {
-                clueMusicLoop.stop(0);
-                clueMusicLoop.dispose();
-                clueMusicLoop = null;
-            }
-            // Tone.Transport.stop(); // Keep transport running for faster restarts
-        }
-
+        
+        // This function handles starting/stopping the audio element (Mute Button)
         function toggleMute() {
             isMuted = !isMuted;
             const button = document.getElementById('mute-button');
+
             if (isMuted) {
+                backgroundMusic.pause();
                 button.textContent = "Music: OFF";
-                button.classList.replace('bg-gray-500', 'bg-red-500');
-                stopMusic();
-            } else {
-                button.textContent = "Music: ON";
                 button.classList.replace('bg-red-500', 'bg-gray-500');
-                // If a clue is currently open, restart music
-                if (currentView === 'clue_modal') {
-                    startMusic();
-                }
+            } else {
+                // **--- CRITICAL CHANGE: Set currentTime to 0 to restart the song ---**
+                backgroundMusic.currentTime = 0; 
+                
+                // Try to play. This must be triggered by a user action (like this button click).
+                backgroundMusic.play().catch(error => {
+                    console.error("Autoplay failed:", error);
+                    button.textContent = "Music: ERROR (Check Autoplay)";
+                    button.classList.replace('bg-gray-500', 'bg-red-500');
+                });
+                button.textContent = "Music: ON";
+                button.classList.replace('bg-gray-500', 'bg-red-500');
             }
         }
-
-        // --- GAME DATA AND STATE (ALL POP CULTURE / MEME VERSION) ---
+        
+        // --- GAME DATA AND STATE (CHRISTMAS TRIVIA) ---
         const gameData = [
             {
-                category: "Blink 182-000s",
+                category: "Holiday Movie Quotes",
                 clues: [
-                    { value: 200, clue: "This reality star's catchphrase, 'That's hot,' became the defining phrase of the mid-2000s.", answer: "Who is Paris Hilton?", id: 'c1-200' },
-                    { value: 400, clue: "The highly addictive flash game where you stack blocks to form horizontal lines.", answer: "What is Tetris?", id: 'c1-400' },
-                    { value: 600, clue: "The specific year that the first iPhone was released, changing Millennial cell phone use forever.", answer: "What is 2007?", id: 'c1-600' },
-                    { value: 800, clue: "The legendary, slightly glitchy video platform that allowed you to legally or illegally watch music videos in high school.", answer: "What is YouTube?", id: 'c1-800' },
-                    { value: 1000, clue: "The specific 2007 Britney Spears song whose video featured a legendary dance break in a circus tent.", answer: "What is 'Gimme More'?", id: 'c1-1000' }
+                    { value: 200, clue: "Finish the quote: 'You smell like beef and ____.'", answer: "What is 'cheese' (from *Elf*)?", id: 'c1-200' },
+                    { value: 400, clue: "In *A Christmas Story*, what is Ralphie's little brother's name?", answer: "Who is Randy?", id: 'c1-400' },
+                    { value: 600, clue: "This character is notoriously afraid of the Grinch, but eventually joins him in singing on Christmas morning.", answer: "Who is Cindy Lou Who?", id: 'c1-600' },
+                    { value: 800, clue: "In *Home Alone*, the Wet Bandits' names are Harry and this other one.", answer: "Who is Marv?", id: 'c1-800' },
+                    { value: 1000, clue: "The Christmas movie considered by some to be the ultimate action film, starring Bruce Willis as John McClane.", answer: "What is *Die Hard*?", id: 'c1-1000' }
                 ]
             },
             {
-                category: "The Canadian Content Law",
+                category: "Carols & Crooners",
                 clues: [
-                    { value: 200, clue: "The iconic Canadian singer known as 'The 6ix God.'", answer: "Who is Drake?", id: 'c2-200' },
-                    { value: 400, clue: "The hilarious phrase often used to describe Canadian politeness in a passive-aggressive way.", answer: "What is 'Sorry, eh?'", id: 'c2-400' },
-                    { value: 600, clue: "The two main ingredients in a classic Canadian 'Nanaimo Bar.'", answer: "What are chocolate and custard (or vanilla buttercream)?", id: 'c2-600' },
-                    { value: 800, clue: "The specific character from *Schitt's Creek* known for their unusual wardrobe and use of the phrase 'A little bit Alexis.'", answer: "Who is Alexis Rose?", id: 'c2-800' },
-                    { value: 1000, clue: "The Canadian-American star who launched the meme of putting a tiny picture of yourself in the corner of a video, often related to music reactions.", answer: "Who is Anthony Fantano (The Needle Drop)?", id: 'c2-1000' }
+                    { value: 200, clue: "Mariah Carey famously declared that all she wants for Christmas is this.", answer: "What is you?", id: 'c2-200' },
+                    { value: 400, clue: "The celebrity duet partner on Bing Crosby's iconic version of 'Little Drummer Boy.'", answer: "Who is David Bowie?", id: 'c2-400' },
+                    { value: 600, clue: "In the song 'The Twelve Days of Christmas,' the gifts stop repeating on this day.", answer: "What is the 5th Day (five gold rings)?", id: 'c2-600' },
+                    { value: 800, clue: "This is the original artist of the song 'Last Christmas,' who died on Christmas Day in 2016.", answer: "Who is George Michael (from Wham!)?", id: 'c2-800' },
+                    { value: 1000, clue: "The official name of the song we commonly call 'Rudolph the Red-Nosed Reindeer.'", answer: "What is 'Rudolph the Red-Nosed Reindeer'?", id: 'c2-1000' }
                 ]
             },
             {
-                category: "Cringe Culture is Dead",
+                category: "Global Traditions",
                 clues: [
-                    { value: 200, clue: "The common internet activity that involves watching and rating strangers performing songs.", answer: "What is TikTok?", id: 'c3-200' },
-                    { value: 400, clue: "The highly relatable meme of a man looking back at another woman, while his girlfriend stares in disapproval.", answer: "What is the 'Distracted Boyfriend' meme?", id: 'c3-400' },
-                    { value: 600, clue: "The meme format that uses a series of photos of a character slowly realizing an unpleasant truth.", answer: "What is 'Expanding Brain' or 'Woke Bae'?", id: 'c3-600' },
-                    { value: 800, clue: "The early 2010s trend of planking in public places, causing confusion and minor injuries.", answer: "What is 'Planking'?", id: 'c3-800' },
-                    { value: 1000, clue: "The specific format of using a yellow, animated character to deliver shocking, often poorly written jokes in the early 2010s.", answer: "What are Minion memes?", id: 'c3-1000' }
+                    { value: 200, clue: "This object is traditionally hidden in the Christmas tree in Germany and the first person to find it receives an extra gift.", answer: "What is the Christmas pickle?", id: 'c3-200' },
+                    { value: 400, clue: "In Sweden, this character, usually a goat, is a popular Christmas decoration and symbol.", answer: "What is the Yule Goat (or Julbock)?", id: 'c3-400' },
+                    { value: 600, clue: "In the Netherlands, Sinterklaas (Santa's counterpart) arrives by boat, accompanied by this controversial helper.", answer: "Who is Zwarte Piet (Black Pete)?", id: 'c3-600' },
+                    { value: 800, clue: "This South American country holds the world record for the largest floating Christmas tree.", answer: "What is Brazil?", id: 'c3-800' },
+                    { value: 1000, clue: "In Italy, children receive gifts not from Santa, but from this good witch on the Epiphany.", answer: "Who is La Befana?", id: 'c3-1000' }
                 ]
             },
             {
-                category: "It's the Nostalgia for Me",
+                category: "Santa's Logistics",
                 clues: [
-                    { value: 200, clue: "The main handheld gaming device that popularized the use of interchangeable cartridges.", answer: "What is the Game Boy?", id: 'c4-200' },
-                    { value: 400, clue: "The sugary, brightly colored cereal that notoriously turned the milk blue.", answer: "What is Crunch Berries (Cap'n Crunch)?", id: 'c4-400' },
-                    { value: 600, clue: "The iconic 90s toy that changed colours depending on its temperature.", answer: "What is a mood ring?", id: 'c4-600' },
-                    { value: 800, clue: "The highly popular 90s cartoon about a group of talking animals solving mysteries in a van.", answer: "What is *Scooby-Doo*?", id: 'c4-800' },
-                    { value: 1000, clue: "The specific video game console that introduced the concept of analog sticks and rumble feedback.", answer: "What is the Nintendo 64 (N64)?", id: 'c4-1000' }
+                    { value: 200, clue: "Santa Claus traditionally lives and works at this geographic location.", answer: "What is the North Pole?", id: 'c4-200' },
+                    { value: 400, clue: "The number of reindeer, including Rudolph, that pull Santa's sleigh.", answer: "What is nine?", id: 'c4-400' },
+                    { value: 600, clue: "The two official names of the reindeer whose names start with the letter 'D'.", answer: "What are Dancer and Donner?", id: 'c4-600' },
+                    { value: 800, clue: "In the 1823 poem, 'A Visit from St. Nicholas,' Santa's nose is compared to this fruit.", answer: "What is a cherry?", id: 'c4-800' },
+                    { value: 1000, clue: "This famous American writer illustrated the first widely popular image of Santa Claus in a red suit for a magazine.", answer: "Who is Haddon Sundblom?", id: 'c4-1000' }
                 ]
             },
             {
-                category: "The Streaming Gods",
+                category: "Festive Facts & Figures",
                 clues: [
-                    { value: 200, clue: "The Netflix show that revived the careers of Winona Ryder and brought back 80s nostalgia.", answer: "What is *Stranger Things*?", id: 'c5-200' },
-                    { value: 400, clue: "The HBO series that follows the dysfunctional, wealthy Roy family fighting for control of a media empire.", answer: "What is *Succession*?", id: 'c5-400' },
-                    { value: 600, clue: "The Disney+ show that introduced the world to the adorable, silent character Grogu (Baby Yoda).", answer: "What is *The Mandalorian*?", id: 'c5-600' },
-                    { value: 800, clue: "The genre of documentary popularized by Netflix that often involves true crimes, conspiracies, and wild twists.", answer: "What is True Crime?", id: 'c5-800' },
-                    { value: 1000, clue: "The South Korean series that broke Netflix records in 2021 by featuring contestants competing in deadly children's games.", answer: "What is *Squid Game*?", id: 'c5-1000' }
+                    { value: 200, clue: "The traditional name of the beverage known as 'milk punch,' often consumed during the holidays.", answer: "What is Eggnog?", id: 'c5-200' },
+                    { value: 400, clue: "This plant, famous for its red and green leaves, is traditionally displayed around Christmas.", answer: "What is a Poinsettia?", id: 'c5-400' },
+                    { value: 600, clue: "The number of points a perfect snowflake has.", answer: "What is six?", id: 'c5-600' },
+                    { value: 800, clue: "The Christmas item invented by a candy store owner to keep children quiet during church services.", answer: "What is a candy cane?", id: 'c5-800' },
+                    { value: 1000, clue: "The shortest day of the year, which typically falls near Christmas, is known by this astronomical term.", answer: "What is the winter solstice?", id: 'c5-1000' }
                 ]
             },
             {
-                category: "TikTok Tactics",
+                category: "Pop Culture Christmas",
                 clues: [
-                    { value: 200, clue: "The abbreviation used to describe content that is entertaining and addictive, meaning 'for your page.'", answer: "What is FYP?", id: 'c6-200' },
-                    { value: 400, clue: "The specific type of short video involving synchronized movement to a popular song clip.", answer: "What is a dance trend or dance challenge?", id: 'c6-400' },
-                    { value: 600, clue: "The popular filter that gives you dramatically large, cartoonish eyes and mouth.", answer: "What is the 'Face Zoom' or 'Big Eyes' filter?", id: 'c6-600' },
-                    { value: 800, clue: "The method of communicating an intense, often unspoken, reaction using only facial expressions and lip syncing to audio.", answer: "What is a 'Vibe Check'?", id: 'c6-800' },
-                    { value: 1000, clue: "The internet slang term used to describe someone who is exceptionally skilled, flawless, or attractive, often related to celebrities.", answer: "What is 'Slay' or 'Iconic'?", id: 'c6-1000' }
+                    { value: 200, clue: "The actor who played the Grinch in the 2000 live-action film.", answer: "Who is Jim Carrey?", id: 'c6-200' },
+                    { value: 400, clue: "The specific toy that Arnold Schwarzenegger tries to buy in the film *Jingle All the Way*.", answer: "What is Turbo Man?", id: 'c6-400' },
+                    { value: 600, clue: "In the movie *Elf*, Buddy the Elf's diet consists of candy, candy canes, candy corn, and this sugary breakfast food.", answer: "What are syrups?", id: 'c6-600' },
+                    { value: 800, clue: "The actress who plays Kevin McCallister's mom in *Home Alone*.", answer: "Who is Catherine O'Hara?", id: 'c6-800' },
+                    { value: 1000, clue: "The fictional department store where Buddy the Elf works.", answer: "What is Gimbels?", id: 'c6-1000' }
                 ]
             }
         ];
@@ -347,24 +339,19 @@
 
             if (view === 'title') {
                 document.getElementById('title-view').classList.remove('hidden');
-                stopMusic(); // Stop music on title screen
             } else if (view === 'board') {
                 document.getElementById('board-view').classList.remove('hidden');
                 document.getElementById('scoreboard').classList.remove('hidden');
-                stopMusic(); // Stop music on board view
                 renderBoard(); // Re-render to reflect disabled clues
             } else if (view === 'clue_modal') { // Renamed from 'modal' to be more specific
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('clue-view').classList.remove('hidden'); // Ensure clue view is shown
-                startMusic(); // START music when clue is displayed
             } else if (view === 'answer_modal') {
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('answer-view').classList.remove('hidden'); // Ensure answer view is shown
-                stopMusic(); // STOP music when answer is revealed
             } else if (view === 'reset_confirm') {
                 document.getElementById('clue-modal').classList.remove('hidden');
                 document.getElementById('reset-confirmation-view').classList.remove('hidden');
-                stopMusic(); // Stop music during confirmation
             }
         }
 
@@ -410,8 +397,8 @@
             // 1. Render Category Headers (first row)
             gameData.forEach(category => {
                 const header = document.createElement('div');
-                // Decreasing text size on md: breakpoint to better fit the six columns horizontally
-                header.className = 'flex items-center justify-center p-1 sm:p-2 text-center text-white bg-jeopardy-blue font-bold text-sm md:text-base lg:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider shadow-xl border-4 border-jeopardy-yellow leading-tight';
+                // Christmas color styling: Red background, Gold text
+                header.className = 'flex items-center justify-center p-1 sm:p-2 text-center text-jeopardy-gold bg-jeopardy-red font-bold text-sm md:text-base lg:text-lg rounded-lg jeopardy-title-font uppercase tracking-wider shadow-xl border-4 border-jeopardy-gold leading-tight';
                 header.textContent = category.category;
                 board.appendChild(header);
             });
@@ -425,15 +412,15 @@
                     
                     const isDisabled = localStorage.getItem(clue.id) === 'disabled';
 
-                    // Use relative heights
-                    let classList = 'clue-cell flex items-center justify-center h-20 sm:h-24 text-white font-extrabold text-3xl sm:text-5xl rounded-lg bg-jeopardy-blue transition duration-300';
+                    // Christmas color styling: Green background, White text
+                    let classList = 'clue-cell flex items-center justify-center h-20 sm:h-24 text-jeopardy-white font-extrabold text-3xl sm:text-5xl rounded-lg bg-jeopardy-green transition duration-300';
 
                     if (isDisabled) {
                         classList += ' disabled';
                         cell.textContent = ''; // Clear text if disabled
                     } else {
                         cell.textContent = `$${value}`;
-                        cell.addEventListener('click', () => openClue(clue)); // No need to pass cellElement directly now
+                        cell.addEventListener('click', () => openClue(clue)); 
                     }
 
                     cell.className = classList;
@@ -451,7 +438,7 @@
             document.getElementById('modal-clue').innerHTML = clue.clue;
             document.getElementById('modal-answer').textContent = clue.answer;
 
-            setView('clue_modal'); // Show the clue first and start music
+            setView('clue_modal'); // Show the clue first 
         }
 
         // Function to reveal the answer in the modal
@@ -460,13 +447,13 @@
             if (currentClue) {
                 localStorage.setItem(currentClue.id, 'disabled');
             }
-            setView('answer_modal'); // Show the answer view and stop music
+            setView('answer_modal'); // Show the answer view 
         }
 
         // Function to close the modal and update the board
         function closeModal() {
             currentClue = null;
-            setView('board'); // Return to the board view and stop music
+            setView('board'); // Return to the board view 
         }
 
         // Initialize the app
